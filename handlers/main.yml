@@ -1,0 +1,16 @@
+---
+- name: Update apt respository
+  become: True
+  changed_when: False
+  ansible.builtin.apt:
+    update_cache: True
+
+- name: Lookup files in default path
+  ansible.builtin.find:
+    paths: "{{ default_path }}"
+    file_type: directory
+  register: default_dirs
+
+- name: Save directories in default path to variable
+  ansible.builtin.set_fact:
+    found_dirs: "{{ default_dirs.files | map(attribute='path') | flatten }}"
