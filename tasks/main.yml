@@ -1,0 +1,209 @@
+---
+- name: INSTALL | GNS3
+  tags:
+    - install
+  block:
+    - name: INSTALL | Ensure GNS3 PPA is present
+      become: True
+      notify: Update apt repository
+      ansible.builtin.apt_repository:
+        repo: ppa:gns3/ppa
+
+    - name: INSTALL | Ensure i386 architecture is enabled in dpkg
+      become: True
+      when: iou_support == True
+      notify: Update apt repository
+      ansible.builtin.command:
+        cmd: "dpkg --add-architecture i386"
+
+    - name: INSTALL | Flush handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: INSTALL | Ensure GNS3 is installed
+      become: True
+      ansible.builtin.apt:
+        name: 
+          - gns3-gui
+          - gns3-server
+        state: present
+
+    - name: INSTALL | Ensure GNS3 IOU is installed
+      become: True
+      when: iou_support == True
+      ansible.builtin.apt:
+        name: gns3-iou
+        state: present
+
+- name: CONFIGURE | GNS3
+  tags:
+    - configure
+  block:
+    - name: CONFIGURE | Lookup files in default path
+      ansible.builtin.find:
+        paths: "{{ default_path }}"
+        file_type: directory
+      register: default_dirs
+
+    - name: CONFIGURE | Save directories in default path to variable
+      ansible.builtin.set_fact:
+        found_dirs: "{{ default_dirs.files | map(attribute='path') | flatten }}"
+
+    - name: CONFIGURE | Ensure images folder exists
+      ansible.builtin.file:
+        path: "{{ images_path | dirname }}"
+        state: directory
+
+    - name: CONFIGURE | Ensure images path is set
+      community.general.ini_file:
+        path: "{{ settings_path }}/gns3_server.conf"
+        section: "Server"
+        option: "images_path"
+        value: "{{ images_path }}"
+      register: ini_result
+
+    - name: CONFIGURE | Save old path of images when custom path is set
+      when: "'images' in item and ini_result.changed"
+      ansible.builtin.set_fact:
+        old_path: "{{ item }}"
+      loop: "{{ found_dirs }}"
+      loop_control:
+        loop_var: item
+
+    - name: CONFIGURE | Move images folder to new directory when not default
+      ansible.builtin.command:
+        cmd: "mv {{ old_path }} {{ images_path }}"
+      when: old_path is defined and old_path != images_path
+      notify:
+        - Lookup files in default path
+        - Save directories in default path to variable
+
+    - name: CONFIGURE | Check for file changes if any
+      ansible.builtin.meta: flush_handlers
+
+    - name: CONFIGURE | Ensure projects folder exists
+      ansible.builtin.file:
+        path: "{{ projects_path | dirname }}"
+        state: directory
+
+    - name: CONFIGURE | Ensure projects path is set
+      community.general.ini_file:
+        path: "{{ settings_path }}/gns3_server.conf"
+        section: "Server"
+        option: "projects_path"
+        value: "{{ projects_path }}"
+      register: ini_result
+
+    - name: CONFIGURE | Save old path of projects when custom path is set
+      when: "'projects' in item and ini_result.changed"
+      ansible.builtin.set_fact:
+        old_path: "{{ item }}"
+      loop: "{{ found_dirs }}"
+      loop_control:
+        loop_var: item
+
+    - name: CONFIGURE | Move projects folder to new directory when not default
+      ansible.builtin.command:
+        cmd: "mv {{ old_path }} {{ projects_path }}"
+      when: old_path is defined and old_path != projects_path
+      notify:
+        - Lookup files in default path
+        - Save directories in default path to variable
+
+    - name: CONFIGURE | Check for file changes if any
+      ansible.builtin.meta: flush_handlers
+
+    - name: CONFIGURE | Ensure appliances folder exists
+      ansible.builtin.file:
+        path: "{{ appliances_path | dirname }}"
+        state: directory
+
+    - name: CONFIGURE | Ensure appliances path is set
+      community.general.ini_file:
+        path: "{{ settings_path }}/gns3_server.conf"
+        section: "Server"
+        option: "appliances_path"
+        value: "{{ appliances_path }}"
+      register: ini_result
+
+    - name: CONFIGURE | Save old path of appliances when custom path is set
+      when: "'appliances' in item and ini_result.changed"
+      ansible.builtin.set_fact:
+        old_path: "{{ item }}"
+      loop: "{{ found_dirs }}"
+      loop_control:
+        loop_var: item
+
+    - name: CONFIGURE | Move appliances folder to new directory when not default
+      ansible.builtin.command:
+        cmd: "mv {{ old_path }} {{ appliances_path }}"
+      when: old_path is defined and old_path != appliances_path
+      notify:
+        - Lookup files in default path
+        - Save directories in default path to variable
+
+    - name: CONFIGURE | Check for file changes if any
+      ansible.builtin.meta: flush_handlers
+
+    - name: CONFIGURE | Ensure symbols folder exists
+      ansible.builtin.file:
+        path: "{{ symbols_path | dirname }}"
+        state: directory
+
+    - name: CONFIGURE | Ensure symbols path is set
+      community.general.ini_file:
+        path: "{{ settings_path }}/gns3_server.conf"
+        section: "Server"
+        option: "symbols_path"
+        value: "{{ symbols_path }}"
+      register: ini_result
+
+    - name: CONFIGURE | Save old path of symbols when custom path is set
+      when: "'symbols' in item and ini_result.changed"
+      ansible.builtin.set_fact:
+        old_path: "{{ item }}"
+      loop: "{{ found_dirs }}"
+      loop_control:
+        loop_var: item
+
+    - name: CONFIGURE | Move symbols folder to new directory when not default
+      ansible.builtin.command:
+        cmd: "mv {{ old_path }} {{ symbols_path }}"
+      when: old_path is defined and old_path != symbols_path
+      notify:
+        - Lookup files in default path
+        - Save directories in default path to variable
+
+    - name: CONFIGURE | Check for file changes if any
+      ansible.builtin.meta: flush_handlers
+
+    - name: CONFIGURE | Ensure configs folder exists
+      ansible.builtin.file:
+        path: "{{ configs_path | dirname }}"
+        state: directory
+
+    - name: CONFIGURE | Ensure configs path is set
+      community.general.ini_file:
+        path: "{{ settings_path }}/gns3_server.conf"
+        section: "Server"
+        option: "configs_path"
+        value: "{{ configs_path }}"
+      register: ini_result
+
+    - name: CONFIGURE | Save old path of configs when custom path is set
+      when: "'configs' in item and ini_result.changed"
+      ansible.builtin.set_fact:
+        old_path: "{{ item }}"
+      loop: "{{ found_dirs }}"
+      loop_control:
+        loop_var: item
+
+    - name: CONFIGURE | Move configs folder to new directory when not default
+      ansible.builtin.command:
+        cmd: "mv {{ old_path }} {{ configs_path }}"
+      when: old_path is defined and old_path != configs_path
+      notify:
+        - Lookup files in default path
+        - Save directories in default path to variable
+
+    - name: CONFIGURE | Check for file changes if any
+      ansible.builtin.meta: flush_handlers
