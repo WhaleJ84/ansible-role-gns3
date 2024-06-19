@@ -1,0 +1,9 @@
+---
+iou_support: False
+settings_path: "{{ ansible_user_dir }}/.config/GNS3/2.2"
+default_path: "{{ ansible_user_dir }}/GNS3"
+images_path: "{{ default_path }}/images"
+projects_path: "{{ default_path }}/projects"
+appliances_path: "{{ default_path }}/appliances"
+symbols_path: "{{ default_path }}/symbols"
+configs_path: "{{ default_path }}/configs"
