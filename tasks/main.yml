@@ -11,7 +11,7 @@
 
     - name: INSTALL | Ensure i386 architecture is enabled in dpkg
       become: true
-      when: iou_support == true
+      when: iou_support
       notify: Update apt repository
       ansible.builtin.command:
         cmd: "dpkg --add-architecture i386"
@@ -29,7 +29,7 @@
 
     - name: INSTALL | Ensure GNS3 IOU is installed
       become: true
-      when: iou_support == true
+      when: iou_support
       ansible.builtin.apt:
         name: gns3-iou
         state: present
