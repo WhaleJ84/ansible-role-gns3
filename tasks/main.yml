@@ -9,9 +9,15 @@
       ansible.builtin.apt_repository:
         repo: ppa:gns3/ppa
 
+    - name: REGISTER | Get foreign dpkg architectures
+      changed_when: false
+      ansible.builtin.command:
+        cmd: dpkg --print-foreign-architectures
+      register: architectures
+
     - name: INSTALL | Ensure i386 architecture is enabled in dpkg
       become: true
-      when: iou_support
+      when: iou_support and "i386" not in architectures.stdout
       notify: Update apt repository
       ansible.builtin.command:
         cmd: "dpkg --add-architecture i386"
