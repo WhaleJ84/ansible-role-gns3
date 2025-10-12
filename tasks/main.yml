@@ -4,14 +4,14 @@
     - install
   block:
     - name: INSTALL | Ensure GNS3 PPA is present
-      become: True
+      become: true
       notify: Update apt repository
       ansible.builtin.apt_repository:
         repo: ppa:gns3/ppa
 
     - name: INSTALL | Ensure i386 architecture is enabled in dpkg
-      become: True
-      when: iou_support == True
+      become: true
+      when: iou_support == true
       notify: Update apt repository
       ansible.builtin.command:
         cmd: "dpkg --add-architecture i386"
@@ -20,7 +20,7 @@
       ansible.builtin.meta: flush_handlers
 
     - name: INSTALL | Ensure GNS3 is installed
-      become: True
+      become: true
       ansible.builtin.apt:
         name: 
           - gns3-gui
@@ -28,8 +28,8 @@
         state: present
 
     - name: INSTALL | Ensure GNS3 IOU is installed
-      become: True
-      when: iou_support == True
+      become: true
+      when: iou_support == true
       ansible.builtin.apt:
         name: gns3-iou
         state: present
