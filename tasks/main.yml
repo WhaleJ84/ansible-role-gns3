@@ -3,11 +3,17 @@
   tags:
     - install
   block:
-    - name: INSTALL | Ensure GNS3 PPA is present
+    - name: INSTALL | Ensure GNS3 repository is present
       become: true
       notify: Update apt repository
-      ansible.builtin.apt_repository:
-        repo: ppa:gns3/ppa
+      ansible.builtin.deb822_repository:
+        name: gns3
+        types: deb
+        uris: http://ppa.launchpad.net/gns3/ppa/ubuntu
+        suites: "{{ ansible_distribution_release }}"
+        components:
+          - main
+        signed_by: https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xB83AAABFFBD82D21B543C8EA86C22C2EC6A24D7F
 
     - name: REGISTER | Get foreign dpkg architectures
       changed_when: false
