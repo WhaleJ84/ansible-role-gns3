@@ -22,7 +22,7 @@
     - name: INSTALL | Ensure GNS3 is installed
       become: true
       ansible.builtin.apt:
-        name: 
+        name:
           - gns3-gui
           - gns3-server
         state: present
