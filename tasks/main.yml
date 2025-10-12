@@ -27,13 +27,7 @@
         name:
           - gns3-gui
           - gns3-server
-        state: present
-
-    - name: INSTALL | Ensure GNS3 IOU is installed
-      become: true
-      when: iou_support
-      ansible.builtin.apt:
-        name: gns3-iou
+          - "{{ 'gns3-iou' if iou_support else null }}"
         state: present
 
 - name: CONFIGURE | GNS3
