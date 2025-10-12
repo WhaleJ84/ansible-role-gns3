@@ -13,20 +13,10 @@
         suites: "{{ ansible_distribution_release }}"
         components:
           - main
+        architectures:
+          - "{{ 'amd64' if ansible_architecture == 'x86_64' else null }}"
+          - "{{ 'i386' if iou_support else null }}"
         signed_by: https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xB83AAABFFBD82D21B543C8EA86C22C2EC6A24D7F
-
-    - name: REGISTER | Get foreign dpkg architectures
-      changed_when: false
-      ansible.builtin.command:
-        cmd: dpkg --print-foreign-architectures
-      register: architectures
-
-    - name: INSTALL | Ensure i386 architecture is enabled in dpkg
-      become: true
-      when: iou_support and "i386" not in architectures.stdout
-      notify: Update apt repository
-      ansible.builtin.command:
-        cmd: "dpkg --add-architecture i386"
 
     - name: INSTALL | Flush handlers
       ansible.builtin.meta: flush_handlers
