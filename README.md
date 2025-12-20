@@ -35,6 +35,6 @@ This example playbook shows how I would use this role, with custom variables to 
 - hosts: localhost
 
   roles:
-    role: whalej84.gns3
-    tags: [ gns3 ]
+    - role: whalej84.gns3
+      tags: [ gns3 ]
 ```
